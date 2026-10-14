@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.example.js_incorporation.ui.HomeScreen
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.js_incorporation.ui.theme.JS_INCORPORATIONTheme
 
@@ -19,21 +20,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             JS_INCORPORATIONTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                HomeScreen()
+            }
                 }
             }
         }
-    }
-}
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
-        text = "hola $name!",
+        text = "Kaiju Inventario",
         modifier = modifier
     )
 }
