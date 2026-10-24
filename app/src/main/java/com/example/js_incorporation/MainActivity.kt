@@ -18,6 +18,7 @@ import com.example.js_incorporation.ui.screens.InventarioScreen
 import com.example.js_incorporation.ui.screens.PerfilScreen
 import com.example.js_incorporation.ui.screens.RegistroScreen
 import com.example.js_incorporation.ui.screens.ResumenScreen
+import com.example.js_incorporation.ui.screens.ModoEspecialScreen
 import com.example.js_incorporation.ui.theme.JS_INCORPORATIONTheme
 import com.example.js_incorporation.viewmodels.MainViewModel
 import com.example.js_incorporation.viewmodels.UsuarioViewModel
@@ -62,7 +63,7 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     NavHost(
                         navController = navController,
-                        startDestination = "registro"
+                        startDestination = Screen.Home.route
                     ) {
                         composable("registro") {
                             RegistroScreen(
@@ -88,6 +89,10 @@ class MainActivity : ComponentActivity() {
 
                         composable(Screen.Perfil.route) {
                             PerfilScreen(viewModel = viewModel)
+                        }
+
+                        composable("modo_especial") {
+                            ModoEspecialScreen()
                         }
                     }
                 }

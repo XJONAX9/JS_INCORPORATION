@@ -105,6 +105,14 @@ fun HomeScreen(viewModel: MainViewModel) {
                     Text("Registrar producto")
                 }
 
+                Button(
+                    onClick = {
+                        viewModel.navigateTo(Screen.ModoEspecial)
+                    }
+                ) {
+                    Text("Modo especial")
+                }
+
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
