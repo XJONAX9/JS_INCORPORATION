@@ -1,4 +1,3 @@
-
 package com.example.js_incorporation
 
 import android.os.Bundle
@@ -17,8 +16,11 @@ import com.example.js_incorporation.navigation.Screen
 import com.example.js_incorporation.ui.screens.HomeScreen
 import com.example.js_incorporation.ui.screens.InventarioScreen
 import com.example.js_incorporation.ui.screens.PerfilScreen
+import com.example.js_incorporation.ui.screens.RegistroScreen
+import com.example.js_incorporation.ui.screens.ResumenScreen
 import com.example.js_incorporation.ui.theme.JS_INCORPORATIONTheme
 import com.example.js_incorporation.viewmodels.MainViewModel
+import com.example.js_incorporation.viewmodels.UsuarioViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 class MainActivity : ComponentActivity() {
@@ -28,8 +30,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             JS_INCORPORATIONTheme {
-
                 val viewModel: MainViewModel = viewModel()
+                val usuarioViewModel: UsuarioViewModel = viewModel()
                 val navController = rememberNavController()
 
                 LaunchedEffect(Unit) {
@@ -42,7 +44,6 @@ class MainActivity : ComponentActivity() {
                                             inclusive = event.inclusive
                                         }
                                     }
-
                                     launchSingleTop = event.singleTop
                                 }
                             }
@@ -58,13 +59,25 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                Surface(
-                    modifier = Modifier.fillMaxSize()
-                ) {
+                Surface(modifier = Modifier.fillMaxSize()) {
                     NavHost(
                         navController = navController,
-                        startDestination = Screen.Home.route
+                        startDestination = "registro"
                     ) {
+                        composable("registro") {
+                            RegistroScreen(
+                                navController = navController,
+                                viewModel = usuarioViewModel
+                            )
+                        }
+
+                        composable("resumen") {
+                            ResumenScreen(
+                                navController = navController,
+                                viewModel = usuarioViewModel
+                            )
+                        }
+
                         composable(Screen.Home.route) {
                             HomeScreen(viewModel = viewModel)
                         }
@@ -82,3 +95,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
