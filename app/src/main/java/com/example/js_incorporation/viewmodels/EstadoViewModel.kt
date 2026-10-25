@@ -1,4 +1,3 @@
-
 package com.example.js_incorporation.viewmodels
 
 import android.app.Application

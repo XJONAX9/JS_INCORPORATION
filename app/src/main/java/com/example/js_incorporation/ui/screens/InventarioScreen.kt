@@ -1,4 +1,3 @@
-
 package com.example.js_incorporation.ui.screens
 
 import androidx.compose.foundation.background
@@ -27,19 +26,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.js_incorporation.model.Producto
 import com.example.js_incorporation.navigation.Screen
+import com.example.js_incorporation.viewmodels.EstadoViewModel
 import com.example.js_incorporation.viewmodels.MainViewModel
 import com.example.js_incorporation.viewmodels.ProductoViewModel
-
-data class Producto(
-    val codigo: String,
-    val nombre: String,
-    val categoria: String,
-    val stock: Int,
-    val stockMinimo: Int
-)
 
 private val AzulOscuro = Color(0xFF101A30)
 private val AzulTarjeta = Color(0xFF1D2A42)
@@ -49,13 +43,15 @@ private val Blanco = Color(0xFFF4F6FA)
 fun InventarioScreen(
     viewModel: MainViewModel,
     productoViewModel: ProductoViewModel,
+    estadoViewModel: EstadoViewModel,
     alRegistrar: () -> Unit
 ) {
     val productos by productoViewModel.productos.collectAsState()
+    val modoEspecialOriginal by estadoViewModel.activo.collectAsState()
+    val modoEspecial = modoEspecialOriginal == true
 
     var productoAEliminar by remember { mutableStateOf<Producto?>(null) }
     var productoAEditar by remember { mutableStateOf<Producto?>(null) }
-
     var nombreEditar by remember { mutableStateOf("") }
     var categoriaEditar by remember { mutableStateOf("") }
     var stockEditar by remember { mutableStateOf("") }
@@ -81,30 +77,33 @@ fun InventarioScreen(
             modifier = Modifier.padding(top = 8.dp, bottom = 12.dp)
         )
 
-        Row(
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            Button(
+                onClick = alRegistrar,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Button(
-                    onClick = alRegistrar,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Registrar producto")
-                }
+                Text("Registrar producto")
+            }
 
-                Button(
-                    onClick = {
-                        viewModel.navigateTo(Screen.Movimientos)
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Movimientos de inventario")
-                }
+            Button(
+                onClick = {
+                    viewModel.navigateTo(Screen.Movimientos)
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Movimientos de inventario")
+            }
+
+            Button(
+                onClick = {
+                    viewModel.navigateTo(Screen.HistorialMovimientos)
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Historial de movimientos")
             }
         }
 
@@ -148,15 +147,33 @@ fun InventarioScreen(
                             )
 
                             Text(
-                                text = if (producto.stock <= producto.stockMinimo) {
-                                    "Stock bajo"
-                                } else {
-                                    "Disponible"
+                                text = when {
+                                    producto.stock <= producto.stockMinimo &&
+                                            modoEspecial ->
+                                        "⚠ ¡STOCK BAJO!"
+
+                                    producto.stock <= producto.stockMinimo ->
+                                        "Stock bajo"
+
+                                    else -> "Disponible"
                                 },
-                                color = if (producto.stock <= producto.stockMinimo) {
-                                    Color(0xFFFF8A80)
+                                color = when {
+                                    producto.stock <= producto.stockMinimo &&
+                                            modoEspecial ->
+                                        Color(0xFFFF5252)
+
+                                    producto.stock <= producto.stockMinimo ->
+                                        Color(0xFFFF8A80)
+
+                                    else -> Color(0xFF81C784)
+                                },
+                                fontWeight = if (
+                                    producto.stock <= producto.stockMinimo &&
+                                    modoEspecial
+                                ) {
+                                    FontWeight.Bold
                                 } else {
-                                    Color(0xFF81C784)
+                                    FontWeight.Normal
                                 }
                             )
                         }
@@ -352,5 +369,3 @@ fun InventarioScreen(
         )
     }
 }
-
-

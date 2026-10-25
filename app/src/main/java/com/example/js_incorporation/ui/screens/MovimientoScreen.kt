@@ -1,7 +1,9 @@
+
 package com.example.js_incorporation.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,11 +16,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.foundation.layout.Row
-import androidx.compose.ui.Alignment
 import com.example.js_incorporation.viewmodels.ProductoViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -29,11 +30,11 @@ fun MovimientoScreen(
 ) {
     val productos by productoViewModel.productos.collectAsState()
 
-    var productoSeleccionado by remember { mutableStateOf("") }
-    var cantidadTexto by remember { mutableStateOf("") }
-    var esEntrada by remember { mutableStateOf(true) }
+    var productoSeleccionado by rememberSaveable { mutableStateOf("") }
+    var cantidadTexto by rememberSaveable { mutableStateOf("") }
+    var esEntrada by rememberSaveable { mutableStateOf(true) }
     var menuAbierto by remember { mutableStateOf(false) }
-    var mensaje by remember { mutableStateOf("") }
+    var mensaje by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -48,8 +49,11 @@ fun MovimientoScreen(
             onExpandedChange = { menuAbierto = !menuAbierto }
         ) {
             OutlinedTextField(
-                value = productos.find { it.codigo == productoSeleccionado }
-                    ?.let { "${it.codigo} - ${it.nombre}" } ?: "",
+                value = productos.find {
+                    it.codigo == productoSeleccionado
+                }?.let {
+                    "${it.codigo} - ${it.nombre}"
+                } ?: "",
                 onValueChange = {},
                 readOnly = true,
                 label = { Text("Seleccionar producto") },
@@ -91,7 +95,7 @@ fun MovimientoScreen(
         Text("Tipo de movimiento")
 
         Row(
-            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically
         ) {
             RadioButton(
                 selected = esEntrada,
@@ -114,17 +118,25 @@ fun MovimientoScreen(
                 }
 
                 mensaje = when {
-                    producto == null -> "Selecciona un producto"
-                    cantidad == null || cantidad <= 0 ->
+                    producto == null -> {
+                        "Selecciona un producto"
+                    }
+
+                    cantidad == null || cantidad <= 0 -> {
                         "Ingresa una cantidad válida"
-                    !esEntrada && cantidad > producto.stock ->
+                    }
+
+                    !esEntrada && cantidad > producto.stock -> {
                         "No hay suficiente stock para esa salida"
+                    }
+
                     else -> {
                         productoViewModel.registrarMovimiento(
                             codigo = producto.codigo,
                             cantidad = cantidad,
                             esEntrada = esEntrada
                         )
+
                         cantidadTexto = ""
                         "Movimiento registrado correctamente"
                     }
@@ -147,4 +159,5 @@ fun MovimientoScreen(
         }
     }
 }
+
 

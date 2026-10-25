@@ -13,19 +13,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.saveable.rememberSaveable
+import com.example.js_incorporation.model.Producto
 import com.example.js_incorporation.viewmodels.ProductoViewModel
 
 @Composable
 fun RegistroProductoScreen(
     productoViewModel: ProductoViewModel,
-    alRegistrar: () -> Unit
+    alRegistrar: () -> Unit,
+    alVolver: () -> Unit
 ) {
-    var codigo by remember { mutableStateOf("") }
-    var nombre by remember { mutableStateOf("") }
-    var categoria by remember { mutableStateOf("") }
-    var stock by remember { mutableStateOf("") }
-    var stockMinimo by remember { mutableStateOf("") }
-    var mensaje by remember { mutableStateOf("") }
+    var codigo by rememberSaveable { mutableStateOf("") }
+    var nombre by rememberSaveable { mutableStateOf("") }
+    var categoria by rememberSaveable { mutableStateOf("") }
+    var stock by rememberSaveable { mutableStateOf("") }
+    var stockMinimo by rememberSaveable { mutableStateOf("") }
+    var mensaje by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -112,6 +115,13 @@ fun RegistroProductoScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Registrar producto")
+        }
+
+        Button(
+            onClick = alVolver,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Volver")
         }
     }
 }
