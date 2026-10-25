@@ -19,9 +19,12 @@ import com.example.js_incorporation.ui.screens.PerfilScreen
 import com.example.js_incorporation.ui.screens.RegistroScreen
 import com.example.js_incorporation.ui.screens.ResumenScreen
 import com.example.js_incorporation.ui.screens.ModoEspecialScreen
+import com.example.js_incorporation.ui.screens.RegistroProductoScreen
+import com.example.js_incorporation.ui.screens.MovimientoScreen
 import com.example.js_incorporation.ui.theme.JS_INCORPORATIONTheme
 import com.example.js_incorporation.viewmodels.MainViewModel
 import com.example.js_incorporation.viewmodels.UsuarioViewModel
+import com.example.js_incorporation.viewmodels.ProductoViewModel
 import kotlinx.coroutines.flow.collectLatest
 
 class MainActivity : ComponentActivity() {
@@ -33,6 +36,7 @@ class MainActivity : ComponentActivity() {
             JS_INCORPORATIONTheme {
                 val viewModel: MainViewModel = viewModel()
                 val usuarioViewModel: UsuarioViewModel = viewModel()
+                val productoViewModel: ProductoViewModel = viewModel()
                 val navController = rememberNavController()
 
                 LaunchedEffect(Unit) {
@@ -60,7 +64,9 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                Surface(modifier = Modifier.fillMaxSize()) {
+                Surface(
+                    modifier = Modifier.fillMaxSize()
+                ) {
                     NavHost(
                         navController = navController,
                         startDestination = Screen.Home.route
@@ -84,15 +90,41 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(Screen.Inventario.route) {
-                            InventarioScreen(viewModel = viewModel)
+                            InventarioScreen(
+                                viewModel = viewModel,
+                                productoViewModel = productoViewModel,
+                                alRegistrar = {
+                                    navController.navigate(
+                                        Screen.RegistroProducto.route
+                                    )
+                                }
+                            )
+                        }
+
+                        composable(Screen.RegistroProducto.route) {
+                            RegistroProductoScreen(
+                                productoViewModel = productoViewModel,
+                                alRegistrar = {
+                                    navController.popBackStack()
+                                }
+                            )
                         }
 
                         composable(Screen.Perfil.route) {
                             PerfilScreen(viewModel = viewModel)
                         }
 
-                        composable("modo_especial") {
+                        composable(Screen.ModoEspecial.route) {
                             ModoEspecialScreen()
+                        }
+
+                        composable(Screen.Movimientos.route) {
+                            MovimientoScreen(
+                                productoViewModel = productoViewModel,
+                                alVolver = {
+                                    navController.popBackStack()
+                                }
+                            )
                         }
                     }
                 }
