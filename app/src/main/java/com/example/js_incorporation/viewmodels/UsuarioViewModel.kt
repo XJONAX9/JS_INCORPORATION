@@ -89,4 +89,5 @@ class UsuarioViewModel : ViewModel() {
 
         return !hayErrores && actual.aceptaTerminos
     }
+
 }

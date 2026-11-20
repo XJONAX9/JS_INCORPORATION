@@ -26,7 +26,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.js_incorporation.viewmodels.UsuarioViewModel
-
+import com.example.js_incorporation.navigation.Screen
+import android.widget.Toast
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistroScreen(
@@ -111,7 +112,14 @@ fun RegistroScreen(
             Button(
                 onClick = {
                     if (viewModel.validarFormulario()) {
-                        navController.navigate("resumen")
+
+                        Toast.makeText(
+                            navController.context,
+                            "Bienvenido ${estado.nombre}, registro exitoso",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        navController.navigate(Screen.Login.route)
                     }
                 },
                 modifier = Modifier.fillMaxWidth()

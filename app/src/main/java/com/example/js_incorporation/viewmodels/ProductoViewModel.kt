@@ -3,14 +3,13 @@ package com.example.js_incorporation.viewmodels
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.js_incorporation.data.ProductoDataStore
+import com.example.js_incorporation.data.DatabaseProvider
 import com.example.js_incorporation.model.Producto
 import com.example.js_incorporation.model.OperacionInventario
 import com.example.js_incorporation.model.EntradaInventario
 import com.example.js_incorporation.model.SalidaInventario
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -18,7 +17,7 @@ import java.util.Locale
 
 class ProductoViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val productoDataStore = ProductoDataStore(application)
+    private val productoDao = DatabaseProvider.getDatabase(application).productoDao()
 
     private val _productos = MutableStateFlow<List<Producto>>(emptyList())
     val productos = _productos.asStateFlow()
@@ -32,26 +31,29 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
 
     private fun cargarProductos() {
         viewModelScope.launch {
-            val guardados = productoDataStore.obtenerProductos().first()
-
-            _productos.value = guardados ?: listOf(
-                Producto("KJ001", "Poleron negro", "Vestuario", 15, 5),
-                Producto("KJ002", "Polera blanca", "Vestuario", 25, 5),
-                Producto("KJ003", "Mouse inalambrico", "Electronica", 8, 5),
-                Producto("KJ004", "Audifonos", "Electronica", 12, 5),
-                Producto("KJ005", "Cable USB-C", "Accesorios", 4, 5),
-                Producto("KJ006", "Caja de embalaje", "Materiales", 30, 10)
-            )
-
-            if (guardados == null) {
-                guardarProductos()
-            }
+            val guardados = productoDao.obtenerTodos()
+            _productos.value =
+                if (guardados.isNotEmpty()) {
+                    guardados
+                } else {
+                    listOf(
+                        Producto("KJ001", "Poleron negro", "Vestuario", 15, 5),
+                        Producto("KJ002", "Polera blanca", "Vestuario", 25, 5),
+                        Producto("KJ003", "Mouse inalambrico", "Electronica", 8, 5),
+                        Producto("KJ004", "Audifonos", "Electronica", 12, 5),
+                        Producto("KJ005", "Cable USB-C", "Accesorios", 4, 5),
+                        Producto("KJ006", "Caja de embalaje", "Materiales", 30, 10)
+                    )
+                }
         }
     }
 
     private fun guardarProductos() {
         viewModelScope.launch {
-            productoDataStore.guardarProductos(_productos.value)
+            productoDao.eliminarTodos()
+            _productos.value.forEach { producto ->
+                productoDao.insertar(producto)
+            }
         }
     }
 

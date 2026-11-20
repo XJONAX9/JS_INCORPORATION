@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,6 +39,11 @@ import com.example.js_incorporation.navigation.Screen
 import com.example.js_incorporation.viewmodels.MainViewModel
 import com.example.js_incorporation.viewmodels.PerfilViewModel
 import java.io.File
+import com.example.js_incorporation.viewmodels.UsuarioViewModel
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 private val AzulOscuro = Color(0xFF101A30)
 private val AzulTarjeta = Color(0xFF1D2A42)
@@ -46,9 +52,13 @@ private val Blanco = Color(0xFFF4F6FA)
 @Composable
 fun PerfilScreen(
     viewModel: MainViewModel,
-    perfilViewModel: PerfilViewModel = viewModel()
-) {
+    usuarioViewModel: UsuarioViewModel,
+    perfilViewModel: PerfilViewModel = viewModel(),
+    onCerrarSesion: () -> Unit
+)
+{
     val imagenUri by perfilViewModel.imagenUri.collectAsState()
+    val usuario by usuarioViewModel.estado.collectAsState()
     val context = LocalContext.current
 
     val galeriaLauncher = rememberLauncherForActivityResult(
@@ -114,11 +124,10 @@ fun PerfilScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .background(AzulOscuro)
                 .padding(innerPadding)
                 .padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(18.dp)
         ) {
             Text(
                 text = "Mi perfil",
@@ -152,6 +161,19 @@ fun PerfilScreen(
                         text = "Foto de perfil",
                         color = Blanco,
                         fontSize = 20.sp
+                    )
+
+                    Text(
+                        text = "Nombre: ${usuario.nombre}",
+                        color = Blanco
+                    )
+                    Text(
+                        text = "Correo: ${usuario.correo}",
+                        color = Blanco
+                    )
+                    Text(
+                        text = "Dirección: ${usuario.direccion}",
+                        color = Blanco
                     )
 
                     Text(
@@ -198,6 +220,25 @@ fun PerfilScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Ir al inventario")
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(
+                onClick = {
+                    onCerrarSesion()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(40.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red
+                )
+            ) {
+                Text(
+                    text = "Cerrar sesión",
+                    color = Color.White
+                )
             }
         }
     }

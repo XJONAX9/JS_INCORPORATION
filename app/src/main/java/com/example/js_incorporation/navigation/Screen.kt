@@ -16,4 +16,9 @@ sealed class Screen(val route: String) {
 
 
     data object HistorialMovimientos : Screen("historial_movimientos_page")
+
+
+    data object Bienvenida : Screen("bienvenida")
+
+    data object Login : Screen("login")
 }

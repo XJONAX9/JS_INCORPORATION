@@ -28,6 +28,8 @@ import com.example.js_incorporation.viewmodels.UsuarioViewModel
 import com.example.js_incorporation.viewmodels.ProductoViewModel
 import com.example.js_incorporation.viewmodels.EstadoViewModel
 import kotlinx.coroutines.flow.collectLatest
+import com.example.js_incorporation.ui.screens.BienvenidaScreen
+import com.example.js_incorporation.ui.screens.LoginScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -72,8 +74,30 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(
                         navController = navController,
-                        startDestination = Screen.Home.route
+                        startDestination = Screen.Bienvenida.route
                     ) {
+                        composable(Screen.Bienvenida.route) {
+                            BienvenidaScreen(
+                                onIniciarClick = {
+                                    navController.navigate(Screen.Login.route)
+                                }
+                            )
+                        }
+
+                        composable(Screen.Login.route) {
+                            LoginScreen(
+                                usuarioViewModel = usuarioViewModel,
+
+                                onLoginClick = {
+                                    navController.navigate(Screen.Home.route)
+                                },
+
+                                onRegistrarseClick = {
+                                    navController.navigate("registro")
+                                }
+                            )
+                        }
+
                         composable("registro") {
                             RegistroScreen(
                                 navController = navController,
@@ -120,7 +144,17 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(Screen.Perfil.route) {
-                            PerfilScreen(viewModel = viewModel)
+                            PerfilScreen(
+                                viewModel = viewModel,
+                                usuarioViewModel = usuarioViewModel,
+                                onCerrarSesion = {
+                                    navController.navigate(Screen.Login.route) {
+                                        popUpTo(Screen.Home.route) {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            )
                         }
 
                         composable(Screen.ModoEspecial.route) {
