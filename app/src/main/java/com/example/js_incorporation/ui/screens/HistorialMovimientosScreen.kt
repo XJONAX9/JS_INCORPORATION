@@ -20,13 +20,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.js_incorporation.viewmodels.ProductoViewModel
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun HistorialMovimientosScreen(
     productoViewModel: ProductoViewModel,
     alVolver: () -> Unit
 ) {
-    val movimientos by productoViewModel.movimientos.collectAsState()
+    val movimientos by productoViewModel.movimientosApi.collectAsState()
+    LaunchedEffect(Unit) {
+        productoViewModel.cargarMovimientosDesdeApi()
+    }
 
     Column(
         modifier = Modifier
@@ -64,7 +68,7 @@ fun HistorialMovimientosScreen(
                             verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Text(
-                                text = movimiento.nombreProducto,
+                                text = movimiento.codigoProducto,
                                 color = Color.White,
                                 style = MaterialTheme.typography.titleMedium
                             )
@@ -75,8 +79,8 @@ fun HistorialMovimientosScreen(
                             )
 
                             Text(
-                                text = "Tipo: ${movimiento.tipo}",
-                                color = if (movimiento.tipo == "Entrada") {
+                                text = "Tipo: ${movimiento.tipoMovimiento}",
+                                color = if (movimiento.tipoMovimiento == "Entrada") {
                                     Color(0xFF81C784)
                                 } else {
                                     Color(0xFFFF8A80)
@@ -93,18 +97,6 @@ fun HistorialMovimientosScreen(
                                 color = Color.White
                             )
 
-                            Text(
-                                text = "Stock resultante: ${movimiento.stockResultante}",
-                                color = Color.White
-                            )
-
-                            if (movimiento.stockResultante <= movimiento.stockMinimo) {
-                                Text(
-                                    text = "¡ALERTA: STOCK BAJO!",
-                                    color = Color(0xFFFF8A80),
-                                    style = MaterialTheme.typography.titleSmall
-                                )
-                            }
                         }
                     }
                 }

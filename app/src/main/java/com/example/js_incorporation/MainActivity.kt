@@ -30,6 +30,7 @@ import com.example.js_incorporation.viewmodels.EstadoViewModel
 import kotlinx.coroutines.flow.collectLatest
 import com.example.js_incorporation.ui.screens.BienvenidaScreen
 import com.example.js_incorporation.ui.screens.LoginScreen
+import com.example.js_incorporation.ui.screens.CatalogoExternoScreen
 
 class MainActivity : ComponentActivity() {
 
@@ -114,6 +115,10 @@ class MainActivity : ComponentActivity() {
 
                         composable(Screen.Home.route) {
                             HomeScreen(viewModel = viewModel)
+                        }
+
+                        composable(Screen.CatalogoExterno.route) {
+                            CatalogoExternoScreen()
                         }
 
                         composable(Screen.Inventario.route) {

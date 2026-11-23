@@ -99,7 +99,7 @@ fun RegistroProductoScreen(
                     }
 
                     else -> {
-                        productoViewModel.registrarProducto(
+                        productoViewModel.registrarProductoDesdeApi(
                             Producto(
                                 codigo.trim(),
                                 nombre.trim(),

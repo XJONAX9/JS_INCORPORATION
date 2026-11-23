@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.sp
 import com.example.js_incorporation.navigation.Screen
 import com.example.js_incorporation.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 private val AzulOscuro = Color(0xFF101A30)
 private val AzulTarjeta = Color(0xFF1D2A42)
@@ -117,6 +119,7 @@ fun HomeScreen(viewModel: MainViewModel) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
                     .background(AzulOscuro)
                     .padding(innerPadding)
                     .padding(20.dp),
@@ -259,6 +262,41 @@ fun HomeScreen(viewModel: MainViewModel) {
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
+
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = AzulTarjeta
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text(
+                            text = "Catálogo Externo",
+                            color = Blanco,
+                            fontSize = 19.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Consulta productos de una API externa.",
+                            color = Blanco
+                        )
+                        Button(
+                            onClick = {
+                                viewModel.navigateTo(
+                                    Screen.CatalogoExterno
+                                )
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Ver catálogo")
+                        }
+                    }
+                }
             }
         }
     }

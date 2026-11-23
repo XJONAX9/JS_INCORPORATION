@@ -14,6 +14,9 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.js_incorporation.network.RetrofitClient
+import com.example.js_incorporation.network.MovimientoRequest
+import com.example.js_incorporation.model.MovimientoDto
 
 class ProductoViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -25,8 +28,16 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
     private val _movimientos = MutableStateFlow<List<Movimiento>>(emptyList())
     val movimientos = _movimientos.asStateFlow()
 
+    private val _movimientosApi =
+        MutableStateFlow<List<MovimientoDto>>(emptyList())
+
+    val movimientosApi =
+        _movimientosApi.asStateFlow()
+
     init {
-        cargarProductos()
+        cargarProductosDesdeApi()
+
+
     }
 
     private fun cargarProductos() {
@@ -141,6 +152,111 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
         )
 
         _movimientos.value = listOf(movimiento) + _movimientos.value
+    }
+
+
+    fun cargarProductosDesdeApi() {
+        viewModelScope.launch {
+            try {
+                val productosApi =
+                    RetrofitClient.productoApi.obtenerProductos()
+                _productos.value = productosApi
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun cargarMovimientosDesdeApi() {
+        viewModelScope.launch {
+            try {
+                val movimientos =
+                    RetrofitClient
+                        .movimientoApi
+                        .obtenerMovimientos()
+
+                _movimientosApi.value = movimientos
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun registrarProductoDesdeApi(
+        producto: Producto
+    ) {
+        viewModelScope.launch {
+            try {
+                RetrofitClient
+                    .productoApi
+                    .registrarProducto(producto)
+                cargarProductosDesdeApi()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun eliminarProductoDesdeApi(
+        codigo: String
+    ) {
+        viewModelScope.launch {
+            try {
+                RetrofitClient
+                    .productoApi
+                    .eliminarProducto(codigo)
+                cargarProductosDesdeApi()
+                println("ELIMINADO Y RECARGADO")
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun editarProductoDesdeApi(
+        productoActualizado: Producto
+    ) {
+        viewModelScope.launch {
+            try {
+                RetrofitClient
+                    .productoApi
+                    .editarProducto(
+                        productoActualizado.codigo,
+                        productoActualizado
+                    )
+                cargarProductosDesdeApi()
+            } catch (e: Exception) {
+
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun registrarMovimientoDesdeApi(
+        codigoProducto: String,
+        cantidad: Int,
+        esEntrada: Boolean
+    ) {
+        viewModelScope.launch {
+            try {
+                val movimiento = MovimientoRequest(
+                    tipoMovimiento =
+                        if (esEntrada) "ENTRADA" else "SALIDA",
+                    cantidad = cantidad,
+                    fecha = java.time.LocalDate.now().toString(),
+                    codigoProducto = codigoProducto
+                )
+                RetrofitClient
+                    .movimientoApi
+                    .registrarMovimiento(movimiento)
+
+                cargarProductosDesdeApi()
+                cargarMovimientosDesdeApi()
+            } catch (e: Exception) {
+
+                e.printStackTrace()
+            }
+        }
     }
 }
 

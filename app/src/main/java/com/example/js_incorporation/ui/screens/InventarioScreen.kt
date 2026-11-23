@@ -246,7 +246,9 @@ fun InventarioScreen(
                 TextButton(
                     onClick = {
                         productoAEliminar?.let { producto ->
-                            productoViewModel.eliminarProducto(producto)
+                            productoViewModel.eliminarProductoDesdeApi(
+                                producto.codigo
+                            )
                         }
                         productoAEliminar = null
                     }
@@ -339,7 +341,7 @@ fun InventarioScreen(
 
                             else -> {
                                 productoAEditar?.let { producto ->
-                                    productoViewModel.editarProducto(
+                                    productoViewModel.editarProductoDesdeApi(
                                         Producto(
                                             codigo = producto.codigo,
                                             nombre = nombreEditar.trim(),

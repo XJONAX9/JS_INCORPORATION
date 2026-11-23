@@ -131,8 +131,8 @@ fun MovimientoScreen(
                     }
 
                     else -> {
-                        productoViewModel.registrarMovimiento(
-                            codigo = producto.codigo,
+                        productoViewModel.registrarMovimientoDesdeApi(
+                            codigoProducto = producto.codigo,
                             cantidad = cantidad,
                             esEntrada = esEntrada
                         )
