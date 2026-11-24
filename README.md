@@ -4,13 +4,13 @@
 
 Kaiju Inventario es una aplicación móvil desarrollada para la asignatura DSY1105. Su objetivo es facilitar la administración de productos, el control de inventario y el registro de movimientos de stock mediante una interfaz móvil moderna desarrollada en Android.
 
-La aplicación se encuentra conectada a un backend desarrollado en Spring Boot mediante Retrofit, permitiendo la comunicación en tiempo real con servicios REST.
+La aplicación se encuentra conectada a un backend desarrollado en Spring Boot mediante Retrofit, permitiendo la comunicación en tiempo real con servicios REST. El inicio de sesión y el registro de usuarios también se realizan contra este backend.
 
 ---
 
 ## Integrantes
 
-- Jonathan Pozo 
+- Jonathan Pozo
 - Sebastian Fica
 
 ---
@@ -39,11 +39,14 @@ La aplicación se encuentra conectada a un backend desarrollado en Spring Boot m
 
 ### Gestión de Usuarios
 
-- Registro de usuario
-- Inicio de sesión
-- Validación de credenciales
-- Cierre de sesión
-- Perfil de usuario
+- Registro de usuario (nombre completo, RUT, correo, contraseña, confirmación de contraseña y rol)
+- Inicio de sesión validado contra el backend
+- Validación de formato de correo, contraseña (mínimo 6 caracteres) y RUT chileno (con dígito verificador)
+- Roles de usuario: Bodega, Ventas y Admin
+- Sesión con token JWT, guardado mientras la aplicación está abierta
+- Mensajes de error entregados por el servidor (credenciales incorrectas, RUT o correo ya registrados, sin conexión)
+- Cierre de sesión (borra el usuario y el token)
+- Perfil de usuario (nombre, correo, RUT y rol)
 
 ### Gestión de Inventario
 
@@ -73,7 +76,9 @@ La aplicación se encuentra conectada a un backend desarrollado en Spring Boot m
 
 Android App
 ↓
-Retrofit
+ViewModel
+↓
+Repository (autenticación) / Retrofit
 ↓
 Spring Boot API
 ↓
@@ -85,6 +90,7 @@ Base de Datos
 
 Backend desarrollado en Spring Boot para:
 
+- Autenticación de usuarios (registro e inicio de sesión)
 - Productos
 - Movimientos de Inventario
 
@@ -99,6 +105,11 @@ https://fakestoreapi.com
 ---
 
 ## Funcionalidades Implementadas con Retrofit
+
+### Autenticación
+
+- POST /api/v1/kaiju/auth/registro
+- POST /api/v1/kaiju/auth/login
 
 ### Productos
 
@@ -123,18 +134,34 @@ https://fakestoreapi.com
 
 ---
 
+## Configuración de la conexión al backend
+
+La dirección del backend se define en `network/RetrofitClient.kt`:
+
+```kotlin
+private const val BASE_URL = "http://10.0.2.2:8080/"
+```
+
+- `10.0.2.2` funciona **solo en el emulador** de Android Studio (apunta al computador que lo ejecuta).
+- Si se usa un celular físico, reemplazar por la IP del computador en la red local (por ejemplo `http://192.168.1.50:8080/`).
+- Las llamadas de autenticación usan la misma dirección (`AUTH_URL = BASE_URL`).
+
+---
+
 ## Ejecución
 
 1. Clonar repositorio.
 2. Abrir proyecto en Android Studio.
-3. Iniciar backend Spring Boot.
+3. Iniciar backend Spring Boot (`mvn spring-boot:run`).
 4. Ejecutar aplicación.
-5. Iniciar sesión y utilizar funcionalidades.
+5. Registrar un usuario e iniciar sesión.
+6. Utilizar funcionalidades.
 
 ---
 
 ## Evidencias
 
+- Registro e inicio de sesión conectados mediante API REST.
 - CRUD conectado mediante API REST.
 - Consumo de API externa.
 - Integración Android + Spring Boot.
