@@ -39,7 +39,6 @@ import com.example.js_incorporation.navigation.Screen
 import com.example.js_incorporation.viewmodels.MainViewModel
 import com.example.js_incorporation.viewmodels.PerfilViewModel
 import java.io.File
-import com.example.js_incorporation.viewmodels.UsuarioViewModel
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.foundation.rememberScrollState
@@ -52,13 +51,12 @@ private val Blanco = Color(0xFFF4F6FA)
 @Composable
 fun PerfilScreen(
     viewModel: MainViewModel,
-    usuarioViewModel: UsuarioViewModel,
     perfilViewModel: PerfilViewModel = viewModel(),
     onCerrarSesion: () -> Unit
 )
 {
     val imagenUri by perfilViewModel.imagenUri.collectAsState()
-    val usuario by usuarioViewModel.estado.collectAsState()
+    val usuario by viewModel.usuarioActual.collectAsState()
     val context = LocalContext.current
 
     val galeriaLauncher = rememberLauncherForActivityResult(
@@ -164,15 +162,19 @@ fun PerfilScreen(
                     )
 
                     Text(
-                        text = "Nombre: ${usuario.nombre}",
+                        text = "Nombre: ${usuario?.nombreCompleto ?: ""}",
                         color = Blanco
                     )
                     Text(
-                        text = "Correo: ${usuario.correo}",
+                        text = "Correo: ${usuario?.email ?: ""}",
                         color = Blanco
                     )
                     Text(
-                        text = "Dirección: ${usuario.direccion}",
+                        text = "RUT: ${usuario?.rut ?: ""}",
+                        color = Blanco
+                    )
+                    Text(
+                        text = "Rol: ${usuario?.rol?.etiqueta ?: ""}",
                         color = Blanco
                     )
 

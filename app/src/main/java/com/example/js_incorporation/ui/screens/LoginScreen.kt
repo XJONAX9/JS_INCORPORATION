@@ -12,8 +12,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.js_incorporation.viewmodels.UsuarioViewModel
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.js_incorporation.ui.utils.validarEmail
+import com.example.js_incorporation.ui.utils.validarPassword
+import com.example.js_incorporation.viewmodels.LoginViewModel
+import com.example.js_incorporation.viewmodels.MainViewModel
+import com.example.js_incorporation.viewmodels.ResultadoLogin
 
 private val AzulOscuro = Color(0xFF101A30)
 private val AzulTarjeta = Color(0xFF1D2A42)
@@ -21,14 +29,31 @@ private val Blanco = Color(0xFFF4F6FA)
 
 @Composable
 fun LoginScreen(
-    usuarioViewModel: UsuarioViewModel,
+    viewModel: MainViewModel,
     onLoginClick: () -> Unit,
-    onRegistrarseClick: () -> Unit
+    onRegistrarseClick: () -> Unit,
+    loginViewModel: LoginViewModel = viewModel()
 ) {
 
-    var correo by remember { mutableStateOf("") }
-    var contrasena by remember { mutableStateOf("") }
-    var errorLogin by remember { mutableStateOf("") }
+    var correo by rememberSaveable { mutableStateOf("") }
+    var contrasena by rememberSaveable { mutableStateOf("") }
+    var intentoEnviar by rememberSaveable { mutableStateOf(false) }
+
+    val isLoading by loginViewModel.isLoading.collectAsState()
+    val resultado by loginViewModel.resultado.collectAsState()
+
+    val errorFormato = if (intentoEnviar) validarEmail(correo) ?: validarPassword(contrasena) else null
+    val errorServidor = (resultado as? ResultadoLogin.Error)?.mensaje
+    val errorLogin = errorFormato ?: errorServidor ?: ""
+
+    LaunchedEffect(resultado) {
+        val r = resultado
+        if (r is ResultadoLogin.Exito) {
+            viewModel.iniciarSesion(r.usuario)
+            loginViewModel.limpiarResultado()
+            onLoginClick()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -64,8 +89,10 @@ fun LoginScreen(
 
                 OutlinedTextField(
                     value = correo,
-                    onValueChange = { correo = it },
+                    onValueChange = { correo = it.trim() },
                     label = { Text("Correo") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Blanco,
@@ -81,7 +108,9 @@ fun LoginScreen(
                     value = contrasena,
                     onValueChange = { contrasena = it },
                     label = { Text("Contraseña") },
+                    singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = Blanco,
@@ -95,22 +124,24 @@ fun LoginScreen(
 
                 Button(
                     onClick = {
-                        if (correo.isBlank()) {
-                            errorLogin = "Debe ingresar un correo"
-                        } else if (contrasena.isBlank()) {
-                            errorLogin = "Debe ingresar una contraseña"
-                        } else if (correo != usuarioViewModel.estado.value.correo) {
-                            errorLogin = "El usuario no existe"
-                        } else if (contrasena != usuarioViewModel.estado.value.clave) {
-                            errorLogin = "La contraseña es incorrecta"
-                        } else {
-                            errorLogin = ""
-                            onLoginClick()
+                        intentoEnviar = true
+                        val formatoValido =
+                            validarEmail(correo) == null && validarPassword(contrasena) == null
+                        if (formatoValido) {
+                            loginViewModel.iniciarSesion(correo, contrasena)
                         }
                     },
+                    enabled = !isLoading,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Ingresar")
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text("Ingresar")
+                    }
                 }
 
                 if (errorLogin.isNotEmpty()) {

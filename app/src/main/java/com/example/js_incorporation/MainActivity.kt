@@ -17,14 +17,12 @@ import com.example.js_incorporation.ui.screens.HomeScreen
 import com.example.js_incorporation.ui.screens.InventarioScreen
 import com.example.js_incorporation.ui.screens.PerfilScreen
 import com.example.js_incorporation.ui.screens.RegistroScreen
-import com.example.js_incorporation.ui.screens.ResumenScreen
 import com.example.js_incorporation.ui.screens.ModoEspecialScreen
 import com.example.js_incorporation.ui.screens.RegistroProductoScreen
 import com.example.js_incorporation.ui.screens.MovimientoScreen
 import com.example.js_incorporation.ui.screens.HistorialMovimientosScreen
 import com.example.js_incorporation.ui.theme.JS_INCORPORATIONTheme
 import com.example.js_incorporation.viewmodels.MainViewModel
-import com.example.js_incorporation.viewmodels.UsuarioViewModel
 import com.example.js_incorporation.viewmodels.ProductoViewModel
 import com.example.js_incorporation.viewmodels.EstadoViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -40,7 +38,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             JS_INCORPORATIONTheme {
                 val viewModel: MainViewModel = viewModel()
-                val usuarioViewModel: UsuarioViewModel = viewModel()
                 val productoViewModel: ProductoViewModel = viewModel()
                 val navController = rememberNavController()
                 val estadoViewModel: EstadoViewModel = viewModel()
@@ -87,10 +84,14 @@ class MainActivity : ComponentActivity() {
 
                         composable(Screen.Login.route) {
                             LoginScreen(
-                                usuarioViewModel = usuarioViewModel,
+                                viewModel = viewModel,
 
                                 onLoginClick = {
-                                    navController.navigate(Screen.Home.route)
+                                    navController.navigate(Screen.Home.route) {
+                                        popUpTo(Screen.Login.route) {
+                                            inclusive = true
+                                        }
+                                    }
                                 },
 
                                 onRegistrarseClick = {
@@ -101,15 +102,7 @@ class MainActivity : ComponentActivity() {
 
                         composable("registro") {
                             RegistroScreen(
-                                navController = navController,
-                                viewModel = usuarioViewModel
-                            )
-                        }
-
-                        composable("resumen") {
-                            ResumenScreen(
-                                navController = navController,
-                                viewModel = usuarioViewModel
+                                navController = navController
                             )
                         }
 
@@ -151,10 +144,10 @@ class MainActivity : ComponentActivity() {
                         composable(Screen.Perfil.route) {
                             PerfilScreen(
                                 viewModel = viewModel,
-                                usuarioViewModel = usuarioViewModel,
                                 onCerrarSesion = {
+                                    viewModel.cerrarSesion()
                                     navController.navigate(Screen.Login.route) {
-                                        popUpTo(Screen.Home.route) {
+                                        popUpTo(navController.graph.id) {
                                             inclusive = true
                                         }
                                     }
