@@ -13,7 +13,6 @@ class EntradaInventario(
     codigoProducto: String,
     cantidad: Int
 ) : OperacionInventario(codigoProducto, cantidad) {
-
     override fun obtenerTipo(): String {
         return "Entrada"
     }
@@ -23,7 +22,6 @@ class SalidaInventario(
     codigoProducto: String,
     cantidad: Int
 ) : OperacionInventario(codigoProducto, cantidad) {
-
     override fun obtenerTipo(): String {
         return "Salida"
     }

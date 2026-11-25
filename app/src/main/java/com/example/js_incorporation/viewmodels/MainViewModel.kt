@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
-
     private val _navigationEvents = MutableSharedFlow<NavigationEvent>()
 
     val navigationEvents = _navigationEvents.asSharedFlow()
@@ -51,3 +50,4 @@ class MainViewModel : ViewModel() {
         }
     }
 }
+

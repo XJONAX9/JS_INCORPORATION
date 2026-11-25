@@ -8,7 +8,6 @@ import com.example.js_incorporation.model.Producto
 
 @Dao
 interface ProductoDao {
-
     @Query("SELECT * FROM productos")
     suspend fun obtenerTodos(): List<Producto>
 

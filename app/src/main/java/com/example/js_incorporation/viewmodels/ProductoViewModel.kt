@@ -12,11 +12,8 @@ import com.example.js_incorporation.network.MovimientoRequest
 import com.example.js_incorporation.model.MovimientoDto
 
 class ProductoViewModel(application: Application) : AndroidViewModel(application) {
-
-
     private val _productos = MutableStateFlow<List<Producto>>(emptyList())
     val productos = _productos.asStateFlow()
-
 
     private val _movimientosApi =
         MutableStateFlow<List<MovimientoDto>>(emptyList())
@@ -26,10 +23,12 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
 
     init {
         cargarProductosDesdeApi()
-
-
     }
 
+    fun limpiar() {
+        _productos.value = emptyList()
+        _movimientosApi.value = emptyList()
+    }
 
     fun cargarProductosDesdeApi() {
         viewModelScope.launch {
@@ -102,7 +101,6 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
                     )
                 cargarProductosDesdeApi()
             } catch (e: Exception) {
-
                 e.printStackTrace()
             }
         }
@@ -129,11 +127,8 @@ class ProductoViewModel(application: Application) : AndroidViewModel(application
                 cargarProductosDesdeApi()
                 cargarMovimientosDesdeApi()
             } catch (e: Exception) {
-
                 e.printStackTrace()
             }
         }
     }
 }
-
-

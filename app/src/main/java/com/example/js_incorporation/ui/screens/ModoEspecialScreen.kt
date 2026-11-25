@@ -39,10 +39,12 @@ private val Blanco = Color(0xFFF4F6FA)
 @Composable
 fun ModoEspecialScreen(
     modifier: Modifier = Modifier,
-    viewModel: EstadoViewModel = viewModel()
+    viewModel: EstadoViewModel = viewModel(),
+    puedeEditar: Boolean = false
 ) {
     val estado by viewModel.activo.collectAsState()
     val mostrarMensaje by viewModel.mostrarMensaje.collectAsState()
+    val error by viewModel.error.collectAsState()
 
     if (estado == null) {
         Box(
@@ -87,7 +89,11 @@ fun ModoEspecialScreen(
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "Configura el estado especial de Kaiju Inventario.",
+                text = if (puedeEditar) {
+                    "Configura el estado especial de Kaiju Inventario. El cambio se aplica a todos los usuarios."
+                } else {
+                    "Estado especial de Kaiju Inventario. Solo un administrador puede cambiarlo."
+                },
                 color = Blanco,
                 fontSize = 15.sp
             )
@@ -121,8 +127,10 @@ fun ModoEspecialScreen(
 
                     Button(
                         onClick = {
+                            viewModel.limpiarError()
                             viewModel.alternarEstado()
                         },
+                        enabled = puedeEditar,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = colorAnimado
                         ),
@@ -133,6 +141,14 @@ fun ModoEspecialScreen(
                         Text(
                             text = textoBoton,
                             color = Color.Black
+                        )
+                    }
+
+                    if (error != null) {
+                        Text(
+                            text = error ?: "",
+                            color = Color(0xFFFF8A80),
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
 

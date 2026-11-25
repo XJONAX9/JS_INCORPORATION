@@ -12,7 +12,6 @@ private val Context.dataStore by preferencesDataStore(
 )
 
 class EstadoDataStore(private val context: Context) {
-
     private val estadoActivado = booleanPreferencesKey("modo_activado")
 
     suspend fun guardarEstado(valor: Boolean) {

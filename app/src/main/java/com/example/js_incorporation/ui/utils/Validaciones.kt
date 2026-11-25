@@ -2,7 +2,6 @@ package com.example.js_incorporation.ui.utils
 
 import android.util.Patterns
 
-
 fun validarEmail(email: String): String? = when {
     email.isBlank() -> "El email es obligatorio"
     !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Formato de email inválido"
@@ -26,7 +25,6 @@ fun validarConfirmacion(password: String, confirmacion: String): String? = when 
     confirmacion != password -> "Las contraseñas no coinciden"
     else -> null
 }
-
 
 private fun limpiarRut(rut: String): String =
     rut.replace(".", "").replace("-", "").trim().uppercase()

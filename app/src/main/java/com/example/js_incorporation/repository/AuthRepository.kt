@@ -15,7 +15,6 @@ class AuthException(mensaje: String) : Exception(mensaje)
 class AuthRepository(
     private val api: KaijuAuthApi = RetrofitClient.kaijuAuthApi
 ) {
-
     suspend fun login(email: String, password: String): LoginKaijuResponse =
         llamar(mensaje401 = "Email o contraseña incorrectos") {
             api.login(LoginKaijuRequest(email.trim().lowercase(), password))
@@ -39,6 +38,16 @@ class AuthRepository(
                 )
             )
         }
+
+    suspend fun listarUsuarios(): List<UsuarioKaijuResponse> =
+        llamar(mensaje401 = MENSAJE_SESION) { api.listarUsuarios() }
+
+    suspend fun eliminarUsuario(id: Long) =
+        llamar(mensaje401 = MENSAJE_SESION) { api.eliminarUsuario(id) }
+
+    private companion object {
+        const val MENSAJE_SESION = "Sesión no válida. Inicia sesión nuevamente"
+    }
 
     private suspend fun <T> llamar(mensaje401: String = "No autorizado", bloque: suspend () -> T): T =
         try {

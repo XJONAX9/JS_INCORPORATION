@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.js_incorporation.model.Producto
+import com.example.js_incorporation.model.esAdmin
 import com.example.js_incorporation.navigation.Screen
 import com.example.js_incorporation.viewmodels.EstadoViewModel
 import com.example.js_incorporation.viewmodels.MainViewModel
@@ -47,6 +49,13 @@ fun InventarioScreen(
     alRegistrar: () -> Unit
 ) {
     val productos by productoViewModel.productos.collectAsState()
+    val usuario by viewModel.usuarioActual.collectAsState()
+    val esAdmin = usuario.esAdmin
+
+    LaunchedEffect(Unit) {
+        productoViewModel.cargarProductosDesdeApi()
+    }
+
     val modoEspecialOriginal by estadoViewModel.activo.collectAsState()
     val modoEspecial = modoEspecialOriginal == true
 
@@ -81,11 +90,13 @@ fun InventarioScreen(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Button(
-                onClick = alRegistrar,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Registrar producto")
+            if (usuario != null) {
+                Button(
+                    onClick = alRegistrar,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Registrar producto")
+                }
             }
 
             Button(
@@ -183,22 +194,32 @@ fun InventarioScreen(
                             color = Color.LightGray
                         )
 
+                        if (esAdmin) {
+                            Text(
+                                text = "Agregado por: ${producto.creadoPor ?: "Sin registro"}",
+                                color = Color.LightGray,
+                                fontSize = 13.sp
+                            )
+                        }
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Button(
-                                onClick = {
-                                    productoAEditar = producto
-                                    nombreEditar = producto.nombre
-                                    categoriaEditar = producto.categoria
-                                    stockEditar = producto.stock.toString()
-                                    minimoEditar = producto.stockMinimo.toString()
-                                    mensajeEditar = ""
-                                },
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text("Editar")
+                            if (usuario != null) {
+                                Button(
+                                    onClick = {
+                                        productoAEditar = producto
+                                        nombreEditar = producto.nombre
+                                        categoriaEditar = producto.categoria
+                                        stockEditar = producto.stock.toString()
+                                        minimoEditar = producto.stockMinimo.toString()
+                                        mensajeEditar = ""
+                                    },
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    Text("Editar")
+                                }
                             }
 
                             Button(

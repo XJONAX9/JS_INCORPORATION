@@ -15,11 +15,9 @@ sealed class ResultadoRegistro {
     data class Error(val mensaje: String) : ResultadoRegistro()
 }
 
-
 class RegistroViewModel(
     private val repository: AuthRepository = AuthRepository()
 ) : ViewModel() {
-
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 

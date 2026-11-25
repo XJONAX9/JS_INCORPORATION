@@ -5,14 +5,21 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import android.widget.Toast
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.js_incorporation.navigation.NavigationEvent
+import com.example.js_incorporation.model.esAdmin
 import com.example.js_incorporation.navigation.Screen
+import com.example.js_incorporation.repository.SesionKaiju
+import com.example.js_incorporation.ui.screens.UsuariosScreen
 import com.example.js_incorporation.ui.screens.HomeScreen
 import com.example.js_incorporation.ui.screens.InventarioScreen
 import com.example.js_incorporation.ui.screens.PerfilScreen
@@ -31,7 +38,6 @@ import com.example.js_incorporation.ui.screens.LoginScreen
 import com.example.js_incorporation.ui.screens.CatalogoExternoScreen
 
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -41,6 +47,25 @@ class MainActivity : ComponentActivity() {
                 val productoViewModel: ProductoViewModel = viewModel()
                 val navController = rememberNavController()
                 val estadoViewModel: EstadoViewModel = viewModel()
+                val usuarioActual by viewModel.usuarioActual.collectAsState()
+                val context = LocalContext.current
+
+                LaunchedEffect(Unit) {
+                    SesionKaiju.sesionExpirada.collect {
+                        viewModel.cerrarSesion()
+                        productoViewModel.limpiar()
+                        Toast.makeText(
+                            context,
+                            "Tu sesión terminó. Inicia sesión nuevamente.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(navController.graph.id) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                }
 
                 LaunchedEffect(Unit) {
                     viewModel.navigationEvents.collectLatest { event ->
@@ -87,6 +112,8 @@ class MainActivity : ComponentActivity() {
                                 viewModel = viewModel,
 
                                 onLoginClick = {
+                                    productoViewModel.cargarProductosDesdeApi()
+                                    estadoViewModel.recargar()
                                     navController.navigate(Screen.Home.route) {
                                         popUpTo(Screen.Login.route) {
                                             inclusive = true
@@ -146,6 +173,25 @@ class MainActivity : ComponentActivity() {
                                 viewModel = viewModel,
                                 onCerrarSesion = {
                                     viewModel.cerrarSesion()
+                                    productoViewModel.limpiar()
+                                    navController.navigate(Screen.Login.route) {
+                                        popUpTo(navController.graph.id) {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            )
+                        }
+
+                        composable(Screen.Usuarios.route) {
+                            UsuariosScreen(
+                                viewModel = viewModel,
+                                alVolver = {
+                                    navController.popBackStack()
+                                },
+                                alEliminarCuentaPropia = {
+                                    viewModel.cerrarSesion()
+                                    productoViewModel.limpiar()
                                     navController.navigate(Screen.Login.route) {
                                         popUpTo(navController.graph.id) {
                                             inclusive = true
@@ -157,7 +203,8 @@ class MainActivity : ComponentActivity() {
 
                         composable(Screen.ModoEspecial.route) {
                             ModoEspecialScreen(
-                                viewModel = estadoViewModel
+                                viewModel = estadoViewModel,
+                                puedeEditar = usuarioActual.esAdmin
                             )
                         }
 
@@ -172,6 +219,7 @@ class MainActivity : ComponentActivity() {
 
                         composable(Screen.HistorialMovimientos.route) {
                             HistorialMovimientosScreen(
+                                mostrarAutor = usuarioActual.esAdmin,
                                 productoViewModel = productoViewModel,
                                 alVolver = {
                                     navController.popBackStack()
@@ -184,4 +232,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

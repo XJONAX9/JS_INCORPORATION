@@ -34,7 +34,6 @@ fun LoginScreen(
     onRegistrarseClick: () -> Unit,
     loginViewModel: LoginViewModel = viewModel()
 ) {
-
     var correo by rememberSaveable { mutableStateOf("") }
     var contrasena by rememberSaveable { mutableStateOf("") }
     var intentoEnviar by rememberSaveable { mutableStateOf(false) }
@@ -63,7 +62,6 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
@@ -71,11 +69,9 @@ fun LoginScreen(
                 containerColor = AzulTarjeta
             )
         ) {
-
             Column(
                 modifier = Modifier.padding(20.dp)
             ) {
-
                 Text(
                     text = "Iniciar Sesión",
                     color = Blanco,

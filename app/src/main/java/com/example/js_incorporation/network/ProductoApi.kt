@@ -9,7 +9,6 @@ import retrofit2.http.Path
 import retrofit2.http.PUT
 
 interface ProductoApi {
-
     @GET("productos")
     suspend fun obtenerProductos(): List<Producto>
 

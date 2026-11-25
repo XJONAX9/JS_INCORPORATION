@@ -9,5 +9,7 @@ data class Producto(
     val nombre: String,
     val categoria: String,
     val stock: Int,
-    val stockMinimo: Int
+    val stockMinimo: Int,
+    val creadoPor: String? = null,
+    val creadoPorEmail: String? = null
 )

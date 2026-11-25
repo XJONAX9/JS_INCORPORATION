@@ -43,7 +43,6 @@ fun BienvenidaScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
         Image(
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "Logo Kaiju",
@@ -74,7 +73,6 @@ fun BienvenidaScreen(
                 modifier = Modifier.padding(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
                 Text(
                     text = "Bienvenido",
                     color = Blanco,

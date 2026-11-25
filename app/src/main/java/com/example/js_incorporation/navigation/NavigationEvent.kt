@@ -1,7 +1,6 @@
 package com.example.js_incorporation.navigation
 
 sealed class NavigationEvent {
-
     data class NavigateTo(
         val route: Screen,
         val popupToRoute: Screen? = null,

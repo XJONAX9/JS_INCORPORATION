@@ -25,7 +25,8 @@ import androidx.compose.runtime.LaunchedEffect
 @Composable
 fun HistorialMovimientosScreen(
     productoViewModel: ProductoViewModel,
-    alVolver: () -> Unit
+    alVolver: () -> Unit,
+    mostrarAutor: Boolean = false
 ) {
     val movimientos by productoViewModel.movimientosApi.collectAsState()
     LaunchedEffect(Unit) {
@@ -97,6 +98,12 @@ fun HistorialMovimientosScreen(
                                 color = Color.White
                             )
 
+                            if (mostrarAutor) {
+                                Text(
+                                    text = "Registrado por: ${movimiento.registradoPor ?: "Sin registro"}",
+                                    color = Color.LightGray
+                                )
+                            }
                         }
                     }
                 }
@@ -104,4 +111,3 @@ fun HistorialMovimientosScreen(
         }
     }
 }
-

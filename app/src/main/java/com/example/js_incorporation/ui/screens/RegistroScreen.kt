@@ -16,13 +16,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -62,9 +59,8 @@ fun RegistroScreen(
     var correo by rememberSaveable { mutableStateOf("") }
     var clave by rememberSaveable { mutableStateOf("") }
     var confirmacion by rememberSaveable { mutableStateOf("") }
-    var rol by rememberSaveable { mutableStateOf<Rol?>(null) }
+    var rolSeleccionado by rememberSaveable { mutableStateOf(Rol.BODEGA.name) }
     var aceptaTerminos by rememberSaveable { mutableStateOf(false) }
-    var menuRolAbierto by remember { mutableStateOf(false) }
     var intentoEnviar by rememberSaveable { mutableStateOf(false) }
 
     val isLoading by registroViewModel.isLoading.collectAsState()
@@ -76,7 +72,6 @@ fun RegistroScreen(
     val errorCorreo = if (intentoEnviar) validarEmail(correo) else null
     val errorClave = if (intentoEnviar) validarPassword(clave) else null
     val errorConfirmacion = if (intentoEnviar) validarConfirmacion(clave, confirmacion) else null
-    val errorRol = if (intentoEnviar && rol == null) "Selecciona un rol" else null
 
     LaunchedEffect(resultado) {
         if (resultado is ResultadoRegistro.Exito) {
@@ -162,38 +157,22 @@ fun RegistroScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // ----- Rol (lista desplegable) -----
-            ExposedDropdownMenuBox(
-                expanded = menuRolAbierto,
-                onExpandedChange = { menuRolAbierto = it }
+            Text("Rol")
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                OutlinedTextField(
-                    value = rol?.etiqueta ?: "",
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text("Rol") },
-                    isError = errorRol != null,
-                    supportingText = { errorRol?.let { Text(it) } },
-                    trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = menuRolAbierto)
-                    },
-                    modifier = Modifier
-                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                        .fillMaxWidth()
-                )
-                ExposedDropdownMenu(
-                    expanded = menuRolAbierto,
-                    onDismissRequest = { menuRolAbierto = false }
-                ) {
-                    Rol.entries.forEach { opcion ->
-                        DropdownMenuItem(
-                            text = { Text(opcion.etiqueta) },
-                            onClick = {
-                                rol = opcion
-                                menuRolAbierto = false
-                            }
-                        )
-                    }
+                Rol.entries.forEach { rol ->
+                    RadioButton(
+                        selected = rolSeleccionado == rol.name,
+                        onClick = {
+                            rolSeleccionado = rol.name
+                            registroViewModel.limpiarResultado()
+                        }
+                    )
+                    Text(rol.etiqueta)
+                    Spacer(modifier = Modifier.size(16.dp))
                 }
             }
 
@@ -213,16 +192,14 @@ fun RegistroScreen(
             Button(
                 onClick = {
                     intentoEnviar = true
-                    val rolElegido = rol
                     val formularioValido = validarNombre(nombre) == null &&
                             validarRut(rut) == null &&
                             validarEmail(correo) == null &&
                             validarPassword(clave) == null &&
                             validarConfirmacion(clave, confirmacion) == null &&
-                            rolElegido != null &&
                             aceptaTerminos
-                    if (formularioValido && rolElegido != null) {
-                        registroViewModel.registrar(nombre, rut, correo, clave, rolElegido)
+                    if (formularioValido) {
+                        registroViewModel.registrar(nombre, rut, correo, clave, Rol.valueOf(rolSeleccionado))
                     }
                 },
                 enabled = !isLoading,

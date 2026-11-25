@@ -5,5 +5,6 @@ data class MovimientoDto(
     val tipoMovimiento: String,
     val cantidad: Int,
     val fecha: String,
-    val codigoProducto: String
+    val codigoProducto: String,
+    val registradoPor: String? = null
 )

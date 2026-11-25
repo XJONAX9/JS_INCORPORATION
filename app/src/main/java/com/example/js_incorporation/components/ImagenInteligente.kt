@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.rememberAsyncImagePainter
 
-
 @Composable
 fun ImagenInteligente(
     imagenUri: Uri?,

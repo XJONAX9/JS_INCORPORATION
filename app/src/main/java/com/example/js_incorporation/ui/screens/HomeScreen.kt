@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.AddBox
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -32,6 +33,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.js_incorporation.model.esAdmin
 import com.example.js_incorporation.navigation.Screen
 import com.example.js_incorporation.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
@@ -52,9 +56,10 @@ private val Blanco = Color(0xFFF4F6FA)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: MainViewModel) {
-
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val usuario by viewModel.usuarioActual.collectAsState()
+    val esAdmin = usuario.esAdmin
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -87,6 +92,19 @@ fun HomeScreen(viewModel: MainViewModel) {
                 ) {
                     Icon(Icons.Default.Person, contentDescription = null)
                     Text("  Perfil")
+                }
+
+                if (esAdmin) {
+                    TextButton(
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            viewModel.navigateTo(Screen.Usuarios)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Default.Group, contentDescription = null)
+                        Text("  Usuarios")
+                    }
                 }
             }
         }
@@ -179,43 +197,88 @@ fun HomeScreen(viewModel: MainViewModel) {
                     }
                 }
 
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = AzulTarjeta
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.AddBox,
-                                contentDescription = null,
-                                tint = Blanco
-                            )
-                            Text(
-                                text = "  Registrar producto",
-                                color = Blanco,
-                                fontSize = 19.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-
-                        Text(
-                            text = "Agrega nuevos productos al inventario.",
-                            color = Blanco
+                if (usuario != null) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = AzulTarjeta
                         )
-
-                        Button(
-                            onClick = {
-                                viewModel.navigateTo(Screen.RegistroProducto)
-                            },
-                            modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
-                            Text("Registrar producto")
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.AddBox,
+                                    contentDescription = null,
+                                    tint = Blanco
+                                )
+                                Text(
+                                    text = "  Registrar producto",
+                                    color = Blanco,
+                                    fontSize = 19.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            Text(
+                                text = "Agrega nuevos productos al inventario.",
+                                color = Blanco
+                            )
+
+                            Button(
+                                onClick = {
+                                    viewModel.navigateTo(Screen.RegistroProducto)
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Registrar producto")
+                            }
+                        }
+                    }
+                }
+
+                if (esAdmin) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = AzulTarjeta
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(20.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.Group,
+                                    contentDescription = null,
+                                    tint = Blanco
+                                )
+                                Text(
+                                    text = "  Usuarios",
+                                    color = Blanco,
+                                    fontSize = 19.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            Text(
+                                text = "Revisa las cuentas registradas y administra sus permisos.",
+                                color = Blanco
+                            )
+
+                            Button(
+                                onClick = {
+                                    viewModel.navigateTo(Screen.Usuarios)
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Administrar usuarios")
+                            }
                         }
                     }
                 }
@@ -263,7 +326,6 @@ fun HomeScreen(viewModel: MainViewModel) {
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
@@ -301,4 +363,3 @@ fun HomeScreen(viewModel: MainViewModel) {
         }
     }
 }
-

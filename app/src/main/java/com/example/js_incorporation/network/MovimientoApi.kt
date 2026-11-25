@@ -13,7 +13,6 @@ data class MovimientoRequest(
 )
 
 interface MovimientoApi {
-
     @GET("movimientos")
     suspend fun obtenerMovimientos(): List<MovimientoDto>
 

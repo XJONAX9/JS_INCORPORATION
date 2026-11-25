@@ -1,7 +1,6 @@
 package com.example.js_incorporation.navigation
 
 sealed class Screen(val route: String) {
-
     data object Home : Screen("home_page")
 
     data object Inventario : Screen("inventario_page")
@@ -14,13 +13,13 @@ sealed class Screen(val route: String) {
 
     data object Movimientos : Screen("movimientos_page")
 
-
     data object HistorialMovimientos : Screen("historial_movimientos_page")
 
     data object CatalogoExterno : Screen("catalogo_externo")
 
-
     data object Bienvenida : Screen("bienvenida")
 
     data object Login : Screen("login")
+
+    data object Usuarios : Screen("usuarios_page")
 }

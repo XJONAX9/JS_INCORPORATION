@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class PerfilViewModel : ViewModel() {
-
     private val _imagenUri = MutableStateFlow<Uri?>(null)
     val imagenUri: StateFlow<Uri?> = _imagenUri.asStateFlow()
 

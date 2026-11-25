@@ -21,7 +21,6 @@ sealed class ResultadoLogin {
 class LoginViewModel(
     private val repository: AuthRepository = AuthRepository()
 ) : ViewModel() {
-
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
