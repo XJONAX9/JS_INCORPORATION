@@ -53,8 +53,8 @@ fun validarRut(rut: String): String? {
     if (cuerpo.length !in 7..8 || !cuerpo.all { it.isDigit() }) {
         return "Formato inválido (ej: 12.345.678-5)"
     }
-    if (calcularDigitoVerificador(cuerpo) != dv) {
-        return "RUT inválido: el dígito verificador no coincide"
+    if (!dv.isDigit() && dv != 'K') {
+        return "Formato inválido (ej: 12.345.678-5)"
     }
     return null
 }
